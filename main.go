@@ -7,7 +7,6 @@ import (
 	"strconv"       // Convert string ke number (untuk ID dari URL)
 	"strings"       //  Manipulasi string (trim, split, dll)
 	"os"            // Get environment variable (PORT)
-	"log"           // Logging
 )
 
 // Produk represents a product in the cashier system
@@ -118,21 +117,19 @@ func productHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := strings.TrimSuffix(r.URL.Path, "/")
 
-	log.Printf(
-		"[REQ] %s %s from %s",
-		r.Method,
-		r.URL.Path,
-		r.RemoteAddr,
-		path,
-	)
-
 	switch r.Method {
 	case http.MethodGet:
 		if path == "/api/produk" {
 			json.NewEncoder(w).Encode(produk)
 			return
 		}
-		getProdukByID(w, r)
+		// pastikan benar-benar ada ID
+		if strings.HasPrefix(path, "/api/produk/") {
+			getProdukByID(w, r)
+			return
+		}
+		
+		http.NotFound(w, r)
 
 	case http.MethodPost:
 		if path != "/api/produk" {
