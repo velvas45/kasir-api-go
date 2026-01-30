@@ -7,6 +7,7 @@ import (
 	"strconv"       // Convert string ke number (untuk ID dari URL)
 	"strings"       //  Manipulasi string (trim, split, dll)
 	"os"            // Get environment variable (PORT)
+	"log"           // Logging
 )
 
 // Produk represents a product in the cashier system
@@ -117,7 +118,13 @@ func productHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := strings.TrimSuffix(r.URL.Path, "/")
 
-	fmt.Println("path:", path, r.URL.Path)
+	log.Printf(
+		"[REQ] %s %s from %s",
+		r.Method,
+		r.URL.Path,
+		r.RemoteAddr,
+		path
+	)
 
 	switch r.Method {
 	case http.MethodGet:
