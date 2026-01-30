@@ -123,7 +123,7 @@ func productHandler(w http.ResponseWriter, r *http.Request) {
 		r.Method,
 		r.URL.Path,
 		r.RemoteAddr,
-		path
+		path,
 	)
 
 	switch r.Method {
