@@ -7,6 +7,7 @@ import (
 	"strconv"       // Convert string ke number (untuk ID dari URL)
 	"strings"       //  Manipulasi string (trim, split, dll)
 	"os"            // Get environment variable (PORT)
+	"log"           // Logging requests
 )
 
 // Produk represents a product in the cashier system
