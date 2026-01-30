@@ -7,7 +7,6 @@ import (
 	"strconv"       // Convert string ke number (untuk ID dari URL)
 	"strings"       //  Manipulasi string (trim, split, dll)
 	"os"            // Get environment variable (PORT)
-	"log"           // Logging requests
 )
 
 // Produk represents a product in the cashier system
@@ -112,49 +111,59 @@ func deleteProduk(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Produk belum ada", http.StatusNotFound)
 }
 
+// func handler product
+func productHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	switch r.Method {
+	case http.MethodGet:
+		if r.URL.Path == "/api/produk" {
+			json.NewEncoder(w).Encode(produk)
+			return
+		}
+		getProdukByID(w, r)
+
+	case http.MethodPost:
+		if r.URL.Path != "/api/produk" {
+			http.NotFound(w, r)
+			return
+		}
+		// baca data dari request
+		var produkBaru Produk
+		err := json.NewDecoder(r.Body).Decode(&produkBaru)
+		if err != nil {
+			http.Error(w, "Invalid request", http.StatusBadRequest)
+			return
+		}
+
+		// masukkin data ke dalam variable produk
+		produkBaru.ID = len(produk) + 1
+		produk = append(produk, produkBaru)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated) // 201
+		json.NewEncoder(w).Encode(produkBaru)
+
+	case http.MethodPut:
+		updateProduk(w, r)
+
+	case http.MethodDelete:
+		deleteProduk(w, r)
+
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("HIT:", r.Method, r.URL.Path)
-		http.NotFound(w, r)
-	})
+	// GET localhost:8080/api/produk
+	// POST localhost:8080/api/produk
+	http.HandleFunc("/api/produk", productHandler)
 
 	// GET localhost:8080/api/produk/{id}
 	// PUT localhost:8080/api/produk/{id}
 	// DELETE localhost:8080/api/produk/{id}
-	http.HandleFunc("/api/produk/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			getProdukByID(w, r)
-		} else if r.Method == "PUT" {
-			updateProduk(w, r)
-		} else if r.Method == "DELETE" {
-			deleteProduk(w, r)
-		}
-	})
-
-	// GET localhost:8080/api/produk
-	// POST localhost:8080/api/produk
-	http.HandleFunc("/api/produk", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(produk)
-		} else if r.Method == "POST" {
-			// baca data dari request
-			var produkBaru Produk
-			err := json.NewDecoder(r.Body).Decode(&produkBaru)
-			if err != nil {
-				http.Error(w, "Invalid request", http.StatusBadRequest)
-				return
-			}
-
-			// masukkin data ke dalam variable produk
-			produkBaru.ID = len(produk) + 1
-			produk = append(produk, produkBaru)
-
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusCreated) // 201
-			json.NewEncoder(w).Encode(produkBaru)
-		}
-	})
+	http.HandleFunc("/api/produk/", productHandler)
 
 	// localhost:8080/health
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
