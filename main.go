@@ -115,24 +115,36 @@ func deleteProduk(w http.ResponseWriter, r *http.Request) {
 func productHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	path := strings.TrimSuffix(r.URL.Path, "/")
+	// buang trailing slash sekali
+	path := strings.Trim(r.URL.Path, "/")
+
+	// split path → ["api", "produk"] atau ["api", "produk", "1"]
+	parts := strings.Split(path, "/")
+
+	// validasi base path
+	if len(parts) < 2 || parts[0] != "api" || parts[1] != "produk" {
+		http.NotFound(w, r)
+		return
+	}
 
 	switch r.Method {
 	case http.MethodGet:
-		if path == "/api/produk" {
+		// GET /api/produk
+		if len(parts) == 2 {
 			json.NewEncoder(w).Encode(produk)
 			return
 		}
-		// pastikan benar-benar ada ID
-		if strings.HasPrefix(path, "/api/produk/") {
+
+		// GET /api/produk/{id}
+		if len(parts) == 3 {
 			getProdukByID(w, r)
 			return
 		}
-		
+
 		http.NotFound(w, r)
 
 	case http.MethodPost:
-		if path != "/api/produk" {
+		if len(parts) != 3 {
 			http.NotFound(w, r)
 			return
 		}
