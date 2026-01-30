@@ -115,16 +115,18 @@ func deleteProduk(w http.ResponseWriter, r *http.Request) {
 func productHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	path := strings.TrimSuffix(r.URL.Path, "/")
+
 	switch r.Method {
 	case http.MethodGet:
-		if r.URL.Path == "/api/produk" {
+		if path == "/api/produk" {
 			json.NewEncoder(w).Encode(produk)
 			return
 		}
 		getProdukByID(w, r)
 
 	case http.MethodPost:
-		if r.URL.Path != "/api/produk" {
+		if path != "/api/produk" {
 			http.NotFound(w, r)
 			return
 		}
