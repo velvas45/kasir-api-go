@@ -112,6 +112,11 @@ func deleteProduk(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("HIT:", r.Method, r.URL.Path)
+		http.NotFound(w, r)
+	})
+
 	// GET localhost:8080/api/produk/{id}
 	// PUT localhost:8080/api/produk/{id}
 	// DELETE localhost:8080/api/produk/{id}
@@ -159,13 +164,14 @@ func main() {
 		})
 	})
 
-	fmt.Println("Server running di localhost:8080")
 
 	// 🚨 PORT RAILWAY
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
+
+	fmt.Println("Server running di", port)
 
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
