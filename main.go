@@ -160,7 +160,13 @@ func main() {
 
 	fmt.Println("Server running di localhost:8080")
 
-	err := http.ListenAndServe(":8080", nil)
+	// 🚨 PORT RAILWAY
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		fmt.Println("gagal running server")
 	}
