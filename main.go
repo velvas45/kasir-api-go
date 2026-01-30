@@ -6,6 +6,7 @@ import (
 	"net/http"      // HTTP server & handling
 	"strconv"       // Convert string ke number (untuk ID dari URL)
 	"strings"       //  Manipulasi string (trim, split, dll)
+	"os"            // Get environment variable (PORT)
 )
 
 // Produk represents a product in the cashier system
