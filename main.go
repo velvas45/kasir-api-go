@@ -117,6 +117,8 @@ func productHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := strings.TrimSuffix(r.URL.Path, "/")
 
+	fmt.Println("path:", path, r.URL.Path)
+
 	switch r.Method {
 	case http.MethodGet:
 		if path == "/api/produk" {
